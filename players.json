@@ -1,4 +1,11 @@
 {
-  "Player":{
-  }
+    "fabs": {
+        "location": "UK"
+    },
+    "fabi": {
+        "location": "UK"
+    },
+    "fab": {
+        "location": "UK"
+    }
 }
