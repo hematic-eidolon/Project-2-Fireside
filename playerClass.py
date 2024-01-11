@@ -3,19 +3,40 @@ import json
 
 class Player:
 
-  def __init__(self, username, password, location):
+  def __init__(self):
     self.__matchesWon = 0
     self.__matchesPlayed = 0
     self.__moneySpent = 0  # default currency in sterling pounds (converter needed)
     self.__moneyWon = 0
     self.__position = 0  # 1 is top
     self.__fixtures = []
-    self.__username = username
-    self.__password = password
-    self.__location = location
+    self.__username = ""
+    self.__password = ""
+    self.__location = ""
 
-  def showDetails(self):
-    pass
+  #===========Setters===========
+
+  def setUsername(self, username):
+    self.username = username
+
+  def setPassword(self, password):
+    self.password = password
+
+  def setLocation(self, location):
+    self.location = location
+
+  #===========Getters===========
+
+  def getUsername(self):
+    return self.__username
+
+  def getPassword(self):
+    return self.__password
+
+  def getLocation(self):
+    return self.__location
+
+  #===========Methods===========
 
   #-----------JSON-----------
 
@@ -86,18 +107,19 @@ class Player:
       return -3  # User not recorded, this is fine
 
   #-----------Player Functions-----------
+
   def registerPlayer(self):
     cancel = False
-    while not cancel:
-      username = self.createUsername(["uname1", "uname2"])
+    while cancel is False:
+      username = self.createUsername()
       password = self.createPassword()
-      location = self.createLocation(["UK", "US", "AU"])
+      location = self.createLocation()
       print("Please review your details:")
       print(
-          f"Username: {self.username}\nPassword: {'*'*len(self.password)}\nLocation: {self.location}"
+          f"Username: {username}\nPassword: {'*'*len(password)}\nLocation: {location}"
       )
       breakLoop = False
-      while not breakLoop:
+      while breakLoop is False:
         option = input("Would you like to finish your registration (Y/n): ")
         if option in {"", "Y", "y"}:
           cancel = True
@@ -107,57 +129,55 @@ class Player:
         else:
           print("That's not an option.")
     if cancel is False:
-      self.__init__(username, password, location)
-      # save player data
+      for dataPiece in [self.getUsername(), self.getPassword()]:
+        pass
 
-  #===========Setters===========
-
-  def setUsername(self, username):
-    self.username = username
-
-  def setPassword(self, password):
-    self.password = password
-
-  def setLocation(self, location):
-    self.location = location
-
-  #===========Getters===========
-
-  def getUsername(self):
-    return self.__username
-
-  #===========Methods===========
-
-  def createUsername(self, usernames):  # check username is unique
-    username = input("Enter a new username: ")
-    while username not in usernames:
-      username = input("Enter a new username: ")
-      if username in usernames:
-        print("Username taken.")
-    return username
+  def createUsername(self):  # check username is unique
+    try:
+      allData = self.getAllData()
+      if type(allData) is dict:
+        username = input("Enter a new username: ")
+        while username in allData:
+          if username in allData:
+            print("Username taken.")
+          username = input("Enter a new username: ")
+        return username
+    except:
+      print("Error.")
+      return None
 
   def createPassword(self):  # check password strength
-    print("Passwords must be at least 8 characters long.")
+    print("Note: Passwords must be at least 8 characters long.\n")
     password = input("Enter a new password: ")
     while len(password) < 8:
       print("Your password does not match the criteria.")
       password = input("Enter a new password: ")
+    print("success")
     return password
 
-  def createLocation(self, locations):
-    print("Available locations:", locations)
-    location = input("Enter your location: ")
-    while location not in locations:
-      location = input("Enter your location: ")
-      if location not in locations:
-        print("Invalid location.")
+  def createLocation(self):
+    allLocations = {"UK", "US", "AU"}
+    print("Available locations: UK, US, AU")
+    location = input("Enter your location: ").upper()
+    while location not in allLocations:
+      #if location not in allLocations:
+      print("Invalid location.")
+      location = input("Enter your location: ").upper()
     return location
 
+  def showDetails(self):
+    pass
 
-testdict = {"location": "UK"}
 
-Fab = Player("fabi", "123", "UK")
+#===========Testing===========
+
+Fab = Player()
 #print(Fab.getAllData())
 #print(Fab.removePlayer("misterman"))
-print(Fab.addPlayer("fab"))
-print(Fab.savePlayerData("fab", testdict))
+#print(Fab.addPlayer("fab"))
+#print(Fab.savePlayerData("fab", testdict))
+
+print(Fab.registerPlayer())
+
+# authenticatorHandler.returnHash(password) -> str
+# authenticatorHandler.checkpass(correcthash, inputstring)

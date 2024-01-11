@@ -68,6 +68,25 @@ class Fixture:
 
 
 def loadFixturesFromJSON():
-    jsonFixtures = dict(json.load(open("settings.json")))
-    for fixture in jsonFixtures:
-        print(fixture)
+  jsonFixtures = dict(json.load(open("settings.json")))["fixtures"]
+  print(jsonFixtures)
+  for fixture in jsonFixtures:
+      print(jsonFixtures[fixture])
+
+      
+
+      fDate = jsonFixtures[fixture][1]
+      date_list = fDate.split("/")
+      try:
+        date_list = [int(x) for x in date_list]
+        fixtureDate =   datetime.datetime(date_list[2],date_list[1],date_list[0])
+
+
+
+        
+
+        
+    
+      except (ValueError, TypeError):
+        pass
+  input()

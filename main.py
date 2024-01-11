@@ -1,10 +1,16 @@
+# === External Files === #
 import authenticatorHandler  # NOQA
 import currencyHandler
 import asciiArt
 import playerClass
-from colorama import Fore, Back
 import fixtureClass
+
+# === External Libraries === #
+from colorama import Fore
+
+# === Builtin Libraries === #
 import os
+import sys
 import time
 import datetime
 import json
@@ -12,7 +18,15 @@ import json
 # ==================== ATTEMPTS FUNCTION ================ #
 # This function is used to call a function repreated times
 # E.g. 3 password guesses
-# 
+
+# PARAMETERS:
+# func: reference to function to be called multiple times (must return a boolean)
+# tries: integer, number of allowed attempts of the function
+# prompt: a string to prompt the user between calls with, *t is replaced with the number of tries left. # NOQA
+
+# RETURNS:
+# bool, if function returned success, false if too many attempts.
+
 def multipleAttemptsFunction(func, tries, prompt) -> bool:
   tries-=1
   if func():
@@ -29,7 +43,7 @@ authenticatorMaster = authenticatorHandler.authenticator()
 activeFixtures = []
 
 
-# ======================================================== #
+# ====================== VALIDATION FUNCTION ================== #
 
 def verifyOptionInput(minimumInteger: int, maximumInteger: int,
                       userInput: str) -> int:
@@ -54,11 +68,15 @@ def verifyOptionInput(minimumInteger: int, maximumInteger: int,
   # min and max: checks that min < input < max - EXCLUSIVE
   #--------------------------END-----------------------------#
 
+
+# ======================================================#
+
+
 def adminMenu():
   print(Fore.BLUE + asciiArt.admin_title)
   print(Fore.WHITE + """
     1: Host a new fixture
-    2: Edit a fixture
+    2: Delete a fixture
     3: View a fixture
     4: Add results.
     5: View results
@@ -68,8 +86,6 @@ def adminMenu():
     9: Quit
   """)
   choice = verifyOptionInput(0, 8, input(">"))
-  print(choice)
-
   match choice:
     case 1:
       # ================= FIXTURE GENERATOR =============== #
@@ -107,20 +123,77 @@ def adminMenu():
         entryFee=fEntryFee,
         prizeMoney=fPrizeMoney
       ))
-      input(activeFixtures)
+      input(Fore.GREEN + "Fixture saved successfully." + Fore.WHITE)
   
     case 2:
-      print("Editing a fixture")
+      print("Deleting a fixture")
+      print(Fore.RED + "WARNING! DELETING A FIXTURE IS PERMANENT")
+      print(Fore.WHITE + "Active Fixtures:")
+      print(str(activeFixtures)[1:-2])
+      fName = input("Enter fixture name to delete:")
+      
+      for fixture in activeFixtures:
+        if fixture.getName() == fName and authenticatorMaster.getPasswordAndAuthenticate(): # NOQA
+            print(Fore.RED + f"Confirm delete fixture {fName}? (Y/n)")
+            cfm = input()
+            if cfm.lower() == "y":
+              del activeFixtures[activeFixtures.index(fName)]
+          
+        print(Fore.WHITE)
+        break
+  
     case 3:
       print("Viewing a fixture")
       print("Fixtures listed: ")
-      print([x for x in activeFixtures])
+      print(str(activeFixtures)[1:-2])
       print("Enter a fixture name to view:")  
-      input()
-      
-
+      fixName = input()
+      for fixture in activeFixtures:
+        if fixture.getName() == fixName:
+          print(f"""
+            {Fore.BLUE} Fixture: {fixName + Fore.WHITE}
+            ------------------
+            {Fore.RED} ID: {Fore.WHITE}           {fixture.getID()}
+            {Fore.RED} Date: {Fore.WHITE}         {fixture.getDatePretty()}
+            {Fore.RED} Entry Fee: {Fore.WHITE}    £{fixture.getFee()}
+            {Fore.RED} Prize Money: {Fore.WHITE}  £{fixture.getPrizeMoney()}
+          """)
+          input()
+          break
+  
+    case 4:
+      print("Add a fixture's results!")
+      #  Loop for each player
+      p1 = p2 = ""
+      found = False
+      for p_searched in [p1, p2]:
+        p_searched = input('Name of the first player: ')
+        with open('players.json', 'r') as f:
+          player_info = json.load(f)
+          for player in player_info:
+            if player.lower() == p_searched.lower():
+              p_searched = player
+              found = True
+              break
+          if not found:
+              print('Player not in database!')
+              return
+ 
+      winner = input(f'Who was the winner of the match, (1) {p1} or (2) {p2}')
+      with open('players.json', 'r') as f:
+        player_info = json.load(f)
+        player_info[player]['wins'] += 1
+      with open('players.json', 'w') as f:
+        json.dump(player_info, f, indent=2)
+        
     case 9:
-      quit()
+      sys.exit()
+
+# ===============================================#
+
+
+## END OF MAIN ADMIN LOOP, LOADING MAIN FUNCTIONS HERE ##
+
 
 #============= OPENING GRAPHICS =================#
 print(Fore.BLUE + asciiArt.fireside_title)
@@ -128,13 +201,19 @@ print(Fore.RED)
 
 print(f"{'ENTER PASSWORD:' : ^50}")
 
-success = multipleAttemptsFunction(
-  authenticatorMaster.getPasswordAndAuthenticate,
-  3,
-  Fore.RED + "Incorrect password. *t tries remaining."
-)
+# success = multipleAttemptsFunction(
+  # authenticatorMaster.getPasswordAndAuthenticate,
+  # 3,
+  # Fore.RED + "Incorrect password. *t tries remaining."
+# )
 
-if success:
+
+fixtureClass.loadFixturesFromJSON()
+input()
+
+
+if 1: # switch this around to disable admin authentication when testing
+# if success:
   print(Fore.GREEN)
   print("LOGIN SUCCESSFULL. ADMIN ACCESS GRANTED")
   print(Fore.WHITE)

@@ -1,11 +1,21 @@
 {
     "settings": {
-        "last-updated-currency": "7:1:2024",
-        "UKtoUSD": "1.2668",
-        "UKtoAUD": "1.8913",
+        "last-updated-currency": "11:1:2024",
+        "UKtoUSD": "1.2743",
+        "UKtoAUD": "1.9000",
         "nextFixtureID": 0
     },
-    "leaderboard": {},
-    "fixtures": {},
-    "passwords": {}
+    "fixtures": {
+        "0": [
+            "test",
+            "01/01/2000",
+            [
+                "abc",
+                "def",
+                "ghi"
+            ],
+            1,
+            2
+        ]
+    }
 }

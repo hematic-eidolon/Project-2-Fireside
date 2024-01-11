@@ -38,10 +38,8 @@ class authenticator:
   def getPasswordAndAuthenticate(self):
     return self.checkPassword(self.getPassword())
 
+def returnHash(strIn: str):
+  return hashlib.sha256(strIn.encode()).digest()
 
-  def authenticateNonAdminUser(username, attempt):
-    return False
-
-
-  def registerNewNonAdminUser(username, password):
-    pass
+def checkPass(correctHash, inputstring):
+  return returnHash(inputstring) == correctHash

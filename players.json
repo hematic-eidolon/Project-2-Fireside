@@ -1,11 +1,13 @@
 {
-    "fabs": {
-        "location": "UK"
-    },
-    "fabi": {
-        "location": "UK"
-    },
-    "fab": {
-        "location": "UK"
-    }
+  "fabs": {
+    "location": "UK",
+    "password": "",
+    "wins": 5
+  },
+  "fabi": {
+    "location": "UK"
+  },
+  "fab": {
+    "location": "UK"
+  }
 }
