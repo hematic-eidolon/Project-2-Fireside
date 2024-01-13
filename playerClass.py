@@ -53,7 +53,6 @@ class Player:
   def getAllData(self):
     try:
       with open("players.json", mode="r") as file:
-        #allData = {"fabs": None}
         allData = json.load(file)
         return allData
     except json.JSONDecodeError:
