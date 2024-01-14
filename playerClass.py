@@ -17,13 +17,13 @@ class Player:
   #===========Setters===========
 
   def setUsername(self, username):
-    self.username = username
+    self.__username = username
 
   def setPassword(self, password):
-    self.password = password
+    self.__password = password
 
   def setLocation(self, location):
-    self.location = location
+    self.__location = location
 
   #===========Getters===========
 
