@@ -1,21 +1,26 @@
 {
-    "settings": {
-        "last-updated-currency": "12:1:2024",
-        "UKtoUSD": "1.2750",
-        "UKtoAUD": "1.9036",
-        "nextFixtureID": 0
-    },
-    "fixtures": {
-        "0": [
-            "test",
-            "01/01/2000",
-            [
-                "abc",
-                "def",
-                "ghi"
-            ],
-            1,
-            2
-        ]
-    }
+  "settings": {
+    "last-updated-currency": "14:1:2024",
+    "UKtoUSD": "1.2750",
+    "UKtoAUD": "1.9066",
+    "nextFixtureID": 0
+  },
+  "fixtures": [
+    [
+      "abc",
+      "20/02/22",
+      "a,b",
+      0.99,
+      1.0,
+      0
+    ],
+    [
+      "test",
+      "14/01/24",
+      "a,b",
+      0.99,
+      1.0,
+      0
+    ]
+  ]
 }

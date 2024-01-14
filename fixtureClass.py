@@ -2,7 +2,6 @@ import currencyHandler as _c  # NOQA
 import datetime
 import json
 
-
 class Fixture:
 
   def __init__(self, ID, currencyHandlerRef: _c.currencyHandler, **kwargs):
@@ -59,6 +58,9 @@ class Fixture:
   def getDatePretty(self) -> str:
     return self.__date.strftime("%d/%m/%y")
 
+
+  # returns the cost for each country by using the reference to the currency handler
+
   def getCostForCountry(self, country: str):
     if country == "USA":
       return f"${self.__currencyRef.GBPtoUSD(self.__entryFee)}"
@@ -68,31 +70,51 @@ class Fixture:
       pass
 
 
-def loadFixturesFromJSON():
-  jsonFixtures = dict(json.load(open("settings.json")))["fixtures"]
-  print(jsonFixtures)
-  for fixture in jsonFixtures:
-    print(jsonFixtures[fixture])
-    # 'test', '01/01/2000', ['abc', 'def', 'ghi'], 1, 2
+  # for saving fixtures: serializeMe() returns the required json format.
 
-    fName = jsonFixtures[fixture][0]
-    fPlayers = jsonFixtures[fixture][2]
+  def serMe(self):
+    return [
+      self.__name, 
+      self.getDatePretty(), 
+      self.__players,
+      self.__entryFee,
+      self.__prizeMoney,
+      self.__ID
+    ]
+
+
+# called to load the JSON file into a fixture list, takes the currency handler as a ref.
+
+def loadFixturesFromJSON(c):
+  jsonFixtures = dict(json.load(open("settings.json")))["fixtures"] # NOQA
+  fList = []
+  for fixture in jsonFixtures:
+    # 'test', '01/01/2000', ['abc', 'def', 'ghi'], 1, 2
     entryFee = prizeMoney = 0
     try:
-      entryFee = float(jsonFixtures[fixture][3])
-      prizeMoney = float(jsonFixtures[fixture][4])
+      entryFee = float(fixture[3])
+      prizeMoney = float(fixture[4])
     except ValueError:
       pass
 
-    fDate = jsonFixtures[fixture][1]
+    fDate = fixture[1]
     date_list = fDate.split("/")
     try:
       date_list = [int(x) for x in date_list]
       fixtureDate = datetime.datetime(date_list[2], date_list[1],
                                       date_list[0])  # NOQA
-
-      # active
+      fList.append(
+        Fixture(
+          fixture[5],
+          c,
+          name=fixture[0],
+          players=fixture[2],
+          entryFee=entryFee,
+          prizeMoney=prizeMoney,
+          date = fixtureDate
+        )
+      )
 
     except (ValueError, TypeError):
       pass
-  input()
+  return fList

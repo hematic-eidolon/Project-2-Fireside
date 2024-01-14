@@ -177,7 +177,7 @@ Fab = Player()
 #print(Fab.addPlayer("fab"))
 #print(Fab.savePlayerData("fab", testdict))
 
-print(Fab.registerPlayer())
+# print(Fab.registerPlayer())
 
 # authenticatorHandler.returnHash(password) -> str
 # authenticatorHandler.checkpass(correcthash, inputstring)

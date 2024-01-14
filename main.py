@@ -92,11 +92,16 @@ def adminMenu():
       os.system("clear")
       print(Fore.BLUE + asciiArt.fixture_title)
       print(Fore.WHITE)
+
+      # GET FIXTURE DETAILS
+      
       fName = input("Enter a fixture name: ")
       fDate = input("Enter a date (dd/mm/yyyy): ")
       fPlayers = input("Enter player usernames, spaced with a comma: ")
       fEntryFee = input("Enter an entry fee in GBP: £")
       fPrizeMoney = input("Enter prize money in GBP: £")
+
+      # PROCESS DATE FROM STRING INTO DATETIME (WITH VALIDATION)
 
       date_list = fDate.split("/")
       try:
@@ -106,6 +111,8 @@ def adminMenu():
         input(Fore.RED + "INVALID DATE FORMAT. Operation cancelled.")
         return
 
+      # CONVERT PRICES INTO FLOATS WITH VALIADTION
+
       try:
         fEntryFee = float(fEntryFee)
         fPrizeMoney = float(fPrizeMoney)
@@ -113,6 +120,8 @@ def adminMenu():
       except (ValueError, TypeError):
         input(Fore.RED + "Invalid monetary format. Operation cancelled.")
         return
+
+      # ADD FINISHED FIXTURE TO FIXTURE LIST
 
       activeFixtures.append(fixtureClass.Fixture(
         ID=0,
@@ -123,36 +132,54 @@ def adminMenu():
         entryFee=fEntryFee,
         prizeMoney=fPrizeMoney
       ))
-      input(Fore.GREEN + "Fixture saved successfully." + Fore.WHITE)
+
+      # now need to refresh json storage to actually save the thing
+      try:
+        with open("settings.json") as f:
+          data = dict(json.load(f))
+        
+        # turn the active fixture list into a ser'able list  
+        data["fixtures"] = [x.serMe() for x in activeFixtures] 
+        with open("settings.json","w") as f:
+          json.dump(data, f, indent=2)
+          
+      
+        input(Fore.GREEN + "Fixture saved successfully. Press Enter" + Fore.WHITE)
+      except Exception: # don't use bare except block will kill ctrl+c usage
+        input(Fore.RED + "Fixture couldn't be saved! Press Enter" + Fore.WHITE)
+        # tell the user its all gone badly wrong
   
     case 2:
-      print("Deleting a fixture")
       print(Fore.RED + "WARNING! DELETING A FIXTURE IS PERMANENT")
       print(Fore.WHITE + "Active Fixtures:")
-      print(str(activeFixtures)[1:-2])
+      # this is a very cursed way of printing the list but it saves time
+      print(str(activeFixtures)[1:-1])
       fName = input("Enter fixture name to delete:")
+
+      # CHECK FOR MATCH 
       
       for fixture in activeFixtures:
         if fixture.getName() == fName and authenticatorMaster.getPasswordAndAuthenticate(): # NOQA
             print(Fore.RED + f"Confirm delete fixture {fName}? (Y/n)")
+            # CHECK TO DELETE AND AUTHENTICATE TO DO SO
             cfm = input()
             if cfm.lower() == "y":
               del activeFixtures[activeFixtures.index(fName)]
           
         print(Fore.WHITE)
-        break
+        break # NO NEED TO CONTINUE CHECKING
   
     case 3:
       print("Viewing a fixture")
       print("Fixtures listed: ")
-      print(str(activeFixtures)[1:-2])
+      print(str(activeFixtures)[1:-1])
       print("Enter a fixture name to view:")  
       fixName = input()
       for fixture in activeFixtures:
         if fixture.getName() == fixName:
           print(f"""
-            {Fore.BLUE} Fixture: {fixName + Fore.WHITE}
-            ------------------
+            {Fore.BLUE} Fixture: {fixName}
+            ------------------{Fore.WHITE}
             {Fore.RED} ID: {Fore.WHITE}           {fixture.getID()}
             {Fore.RED} Date: {Fore.WHITE}         {fixture.getDatePretty()}
             {Fore.RED} Entry Fee: {Fore.WHITE}    £{fixture.getFee()}
@@ -208,7 +235,7 @@ print(f"{'ENTER PASSWORD:' : ^50}")
 # )
 
 
-fixtureClass.loadFixturesFromJSON()
+activeFixtures = fixtureClass.loadFixturesFromJSON(currencyHandlerMaster)  
 input()
 
 
