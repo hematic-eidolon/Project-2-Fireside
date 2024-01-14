@@ -42,6 +42,10 @@ currencyHandlerMaster = currencyHandler.currencyHandler()
 authenticatorMaster = authenticatorHandler.authenticator()
 activeFixtures = []
 
+nextFixID = 0
+with open("settings.json") as f:
+  nextFixID = int(dict(json.load(f))["settings"]["nextFixtureID"])
+
 
 # ====================== VALIDATION FUNCTION ================== #
 
@@ -73,6 +77,7 @@ def verifyOptionInput(minimumInteger: int, maximumInteger: int,
 
 
 def adminMenu():
+  global nextFixID
   print(Fore.BLUE + asciiArt.admin_title)
   print(Fore.WHITE + """
     1: Host a new fixture
@@ -85,13 +90,12 @@ def adminMenu():
     8: Edit a user
     9: Quit
   """)
-  choice = verifyOptionInput(0, 8, input(">"))
+  choice = verifyOptionInput(0, 10, input(">"))
   match choice:
     case 1:
       # ================= FIXTURE GENERATOR =============== #
       os.system("clear")
-      print(Fore.BLUE + asciiArt.fixture_title)
-      print(Fore.WHITE)
+      print(Fore.BLUE + asciiArt.fixture_title + Fore.WHITE)
 
       # GET FIXTURE DETAILS
       
@@ -124,7 +128,7 @@ def adminMenu():
       # ADD FINISHED FIXTURE TO FIXTURE LIST
 
       activeFixtures.append(fixtureClass.Fixture(
-        ID=0,
+        ID=nextFixID,
         currencyHandlerRef=currencyHandlerMaster,
         date=fixtureDate,
         name=fName,
@@ -133,21 +137,28 @@ def adminMenu():
         prizeMoney=fPrizeMoney
       ))
 
+      # INCREMENT NEXTFIXID
+      # need to reload settings afterwards to make sure it's saved
       # now need to refresh json storage to actually save the thing
+      nextFixID += 1
       try:
+        # load json to make sure nothing overwritten
         with open("settings.json") as f:
           data = dict(json.load(f))
-        
         # turn the active fixture list into a ser'able list  
         data["fixtures"] = [x.serMe() for x in activeFixtures] 
+        # increment the next id to reflect the new one
+        data["settings"]["nextFixtureID"] += 1
+        # now dump json to file
         with open("settings.json","w") as f:
           json.dump(data, f, indent=2)
+
+        # output sucess message
           
-      
         input(Fore.GREEN + "Fixture saved successfully. Press Enter" + Fore.WHITE)
       except Exception: # don't use bare except block will kill ctrl+c usage
         input(Fore.RED + "Fixture couldn't be saved! Press Enter" + Fore.WHITE)
-        # tell the user its all gone badly wrong
+        # oh dear! tell the user its all gone badly wrong
   
     case 2:
       print(Fore.RED + "WARNING! DELETING A FIXTURE IS PERMANENT")
@@ -175,8 +186,12 @@ def adminMenu():
       print(str(activeFixtures)[1:-1])
       print("Enter a fixture name to view:")  
       fixName = input()
+      # iterate over the active fixrure list
       for fixture in activeFixtures:
+        # check for a match
         if fixture.getName() == fixName:
+          # pretty-print the fixture details to the user
+          os.system("clear")
           print(f"""
             {Fore.BLUE} Fixture: {fixName}
             ------------------{Fore.WHITE}
@@ -186,6 +201,7 @@ def adminMenu():
             {Fore.RED} Prize Money: {Fore.WHITE}  £{fixture.getPrizeMoney()}
           """)
           input()
+          # stop checking for more fixtures since one has been found
           break
   
     case 4:
@@ -215,6 +231,7 @@ def adminMenu():
         
     case 9:
       sys.exit()
+      # any other clearup needs to go here, don't think this applies to anything rn
 
 # ===============================================#
 
@@ -223,27 +240,21 @@ def adminMenu():
 
 
 #============= OPENING GRAPHICS =================#
-print(Fore.BLUE + asciiArt.fireside_title)
-print(Fore.RED)
-
+print(Fore.BLUE + asciiArt.fireside_title + Fore.RED)
 print(f"{'ENTER PASSWORD:' : ^50}")
 
-# success = multipleAttemptsFunction(
-  # authenticatorMaster.getPasswordAndAuthenticate,
-  # 3,
-  # Fore.RED + "Incorrect password. *t tries remaining."
-# )
+success = multipleAttemptsFunction(
+  authenticatorMaster.getPasswordAndAuthenticate,
+  3,
+  Fore.RED + "Incorrect password. *t tries remaining."
+)
 
 
 activeFixtures = fixtureClass.loadFixturesFromJSON(currencyHandlerMaster)  
-input()
 
-
-if 1: # switch this around to disable admin authentication when testing
-# if success:
-  print(Fore.GREEN)
-  print("LOGIN SUCCESSFULL. ADMIN ACCESS GRANTED")
-  print(Fore.WHITE)
+# if 1: # switch this around to disable admin authentication when testing
+if success:
+  print(Fore.GREEN + "LOGIN SUCCESSFULL. ADMIN ACCESS GRANTED" + Fore.WHITE)
   time.sleep(1)
   while 1:
     os.system("clear")
