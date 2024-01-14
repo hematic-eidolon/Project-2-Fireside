@@ -62,8 +62,8 @@ class currencyHandler():
     self.jsonDict["settings"]["UKtoAUD"] = self.UKtoAUD
     
     # Reload the dictionary
-    json.dump(self.jsonDict, open("settings.json","w"), indent=4)
-    self.jsonDict = dict(json.load(open("settings.json")))
+    json.dump(self.jsonDict, open("settings.json","w"), indent=2) # NOQA
+    self.jsonDict = dict(json.load(open("settings.json"))) # NOQA
 
     # return success status 
     return s

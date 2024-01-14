@@ -7,7 +7,8 @@ import termios
 class authenticator:
 
   def __init__(self) -> None:
-    self.passwordHash = b"P\xa6\x82ic\xbc\xeb\x93\xcc\xbf\tA\x07B\x19E\x9bl\xcfJ\xd7\x12\xac\xcc\xcd\xea\xaa\x8d'\x85P\xf5"
+    self.passwordHash = \
+    b"P\xa6\x82ic\xbc\xeb\x93\xcc\xbf\tA\x07B\x19E\x9bl\xcfJ\xd7\x12\xac\xcc\xcd\xea\xaa\x8d'\x85P\xf5"
 
   def checkPassword(self, passwordToValidate: str) -> bool:
     inputHash = hashlib.sha256(passwordToValidate.encode()).digest()
