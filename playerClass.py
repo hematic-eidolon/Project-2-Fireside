@@ -149,10 +149,10 @@ class Player:
     print("Note: Passwords must be at least 8 characters long.\n")
     # this line below uses the authenticatorhandler getPassword function
     # this hides the text entered and replaces it with * so makes it more secure.
-    password = authenticatorHandler.authenticator.getPassword(None) # NOQA
+    password = authenticatorHandler.authenticator.getPassword(None)  # NOQA
     while len(password) < 8:
       print("Your password does not match the criteria.")
-      password = input("Enter a new password: ")
+      password = authenticatorHandler.authenticator.getPassword(None)
     print("success")
     return password
 
@@ -161,13 +161,28 @@ class Player:
     print("Available locations: UK, US, AU")
     location = input("Enter your location: ").upper()
     while location not in allLocations:
-      #if location not in allLocations:
       print("Invalid location.")
       location = input("Enter your location: ").upper()
     return location
 
-  def showDetails(self):
-    pass
+  def showDetails(self, username):
+    try:
+      allData = self.getAllData()
+      if type(allData) is dict:
+        if username in allData:
+          userData = allData[username]
+          for item in userData:
+            itemName = item[0].upper() + item[1:]
+            if item == "password":
+              print(f"{itemName}: {'*'*len(userData[item])}")
+            else:
+              print(f"{itemName}: {userData[item]}")
+        else:
+          return -3  # User not recorded
+    except json.JSONDecodeError:
+      return -1  # Error parsing from json
+    except FileNotFoundError:
+      return -2  # File not found
 
 
 #===========Testing===========
@@ -178,7 +193,8 @@ Fab = Player()
 #print(Fab.addPlayer("fab"))
 #print(Fab.savePlayerData("fab", testdict))
 
-# print(Fab.registerPlayer())
+#print(Fab.registerPlayer())
+#print(Fab.showDetails("fabs"))
 
 # authenticatorHandler.returnHash(password) -> str
 # authenticatorHandler.checkpass(correcthash, inputstring)

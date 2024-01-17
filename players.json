@@ -1,13 +1,15 @@
 {
   "fabs": {
     "location": "UK",
-    "password": "",
-    "wins": 5
+    "password": "testpassword123",
+    "wins": 7
   },
   "fabi": {
-    "location": "UK"
+    "location": "UK",
+    "wins": 3
   },
   "fab": {
-    "location": "UK"
+    "location": "UK",
+    "wins": 3
   }
 }
