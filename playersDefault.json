@@ -1,8 +1,10 @@
 {
-  "fabs": {
+  "username": {
     "location": "UK",
     "password": "testpassword123",
     "wins": 5
+    "moneyspent": 0.00
+    "moneywon": 0.00
   },
   "fabi": {
     "location": "UK"

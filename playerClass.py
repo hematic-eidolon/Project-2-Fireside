@@ -60,11 +60,13 @@ class Player:
     except FileNotFoundError:
       return -2  # File not found
 
-  def savePlayerData(self, username, freshUserData):
+  def savePlayerData(self, freshUserData):  # essentially updates a player
     try:
       allData = self.getAllData()
+      username = freshUserData["username"]
       if type(allData) is dict:
         if username in allData:
+          freshUserData.pop("username")
           allData[username] = freshUserData
           with open("players.json", mode="w") as file:
             json.dump(allData, file, indent=4)
@@ -84,6 +86,7 @@ class Player:
           allData[username] = None
           with open("players.json", mode="w") as file:
             json.dump(allData, file, indent=4)
+          return 0
         else:
           return -3  # User is already recorded, no changes made
     except json.JSONDecodeError:
@@ -104,13 +107,35 @@ class Player:
       return -2  # File not found
     except KeyError:
       return -3  # User not recorded, this is fine
-
+      
+  def checkJsonError(self, error, isReg = False) -> bool:
+    if error in {-1,-2,-3}:
+      match error:
+        case -3:
+          if isReg:
+            print("User already recorded, no changes made.")
+          else:
+            print("User not recorded.")
+        case -1:
+          print("Error parsing from JSON.")
+        case -2:
+          print("Player data storage file not found.")
+      isFine = False
+    else:
+      isFine = True
+    return isFine
+        
   #-----------Player Functions-----------
 
   def registerPlayer(self):
     cancel = False
+    errorEncountered = False
     while cancel is False:
       username = self.createUsername()
+      if username in {-1,-2,-3}:
+        errorEncountered = True
+        input("An error has occured. Cannot continue with registration.")
+        break # error, cannot continue with registration
       password = self.createPassword()
       location = self.createLocation()
       print("Please review your details:")
@@ -127,23 +152,21 @@ class Player:
           breakLoop = True
         else:
           print("That's not an option.")
-    if cancel is False:
-      for dataPiece in [self.getUsername(), self.getPassword()]:
-        pass
+    if errorEncountered is False:
+      freshUserData = {"username":username, "password":password,"location":location}
+      return freshUserData
 
   def createUsername(self):  # check username is unique
-    try:
-      allData = self.getAllData()
-      if type(allData) is dict:
+    allData = self.getAllData()
+    if type(allData) is dict:
+      username = input("Enter a new username: ")
+      while username in allData:
+        if username in allData:
+          print("Username taken.")
         username = input("Enter a new username: ")
-        while username in allData:
-          if username in allData:
-            print("Username taken.")
-          username = input("Enter a new username: ")
-        return username
-    except:
-      print("Error.")
-      return None
+      return username
+    else:
+      return allData # returns error code
 
   def createPassword(self):  # check password strength
     print("Note: Passwords must be at least 8 characters long.\n")
@@ -198,3 +221,7 @@ Fab = Player()
 
 # authenticatorHandler.returnHash(password) -> str
 # authenticatorHandler.checkpass(correcthash, inputstring)
+
+testDict = {"key":"val",
+           "key2":"val2"}
+print(testDict.popitem())

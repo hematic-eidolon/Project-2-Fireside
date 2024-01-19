@@ -212,25 +212,23 @@ def adminMenu():
       # --------- ADD RESULT --------- #
       print(Fore.BLUE + "Add a fixture's results!" + Fore.WHITE)
       p1 = p2 = "" # 2 players for each result
-      found = False
       for p_searched in [p1, p2]:
+        found = False
         # Looping for each player
-        p_searched = input('Name of the first player: ')
+        p_searched = input('Name of the player: ')
         with open('players.json', 'r') as f:
           # Taking information for players.json
           player_info = json.load(f)
           for player in player_info:
             if player.lower() == p_searched.lower():
-              print(player.lower())
-              print(p_searched.lower())
               # Checking if player exists
               p_searched = player
               found = True
               break
           if not found:
-              print('Player not in database!')
-              # Player does not exist
-              return
+            print('Player not in database!')
+            # Player does not exist
+            return
  
       winner = input(f'Who was the winner of the match, (1) {p1} or (2) {p2}')
       # Checks the winner
@@ -262,17 +260,21 @@ def adminMenu():
         input()
         # Sorts list by item[x] (change x depending on where position is)
     case 6:
-      PlayerInstance.registerPlayer()
+      freshUserData = PlayerInstance.registerPlayer()
+      if type(freshUserData) is dict:
+        input()
+        username = freshUserData["username"]
+        error = PlayerInstance.addPlayer(username)
+        PlayerInstance.checkJsonError(error, isReg = True)
+        error = PlayerInstance.savePlayerData(freshUserData)
+        PlayerInstance.checkJsonError(error)
+        
+      else:
+        print("An error has occured.")
     case 7:
       queriedUsername = input("Username to search for: ")
       error = PlayerInstance.showDetails(queriedUsername)
-      match error:
-        case -3:
-          print("User not recorded.")
-        case -1:
-          print("Error parsing from JSON.")
-        case -2:
-          print("Player data storage file not found.")
+      PlayerInstance.checkJsonError(error)
       input()
     case 9:
      sys.exit()
