@@ -353,7 +353,7 @@ else:
             Account Location:
           """)
         case 2:
-          print(asciiArt.
+          print("Upcoming.")
 
         case 3:
           pass
