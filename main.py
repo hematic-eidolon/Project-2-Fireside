@@ -325,14 +325,17 @@ else:
     uN = input("Enter username:")
     uP = input("Enter password:")
 
+    # log in here
+
+
+    userLoggedIn = None # Player() class
     
 
     nonAdminUserLoop = True
     while nonAdminUserLoop:
       os.system("clear")
       print(f"""
-      Logged in as: {userLoggedIn}
-      
+      Logged in as: {userLoggedIn.getUsername()}
         1: View account statistics
         2: View upcoming fixtures
         3: Delete account
@@ -342,17 +345,21 @@ else:
 
       match opt:
         case 1:
-          print("Account Info")
+          print(Fore.BLUE + asciiArt.account_info)
+          print(f"""
+            Account username: {userLoggedIn.getUsername()}
+            Account password: **********
+            Game wins:        {userLoggedIn.getLocation()}
+            Account Location:
+          """)
         case 2:
-          print("Upcoming:")
+          print(asciiArt.
 
         case 3:
           pass
 
         case 4:
           quit()
-      
-
       
   
   elif choice == 2:
