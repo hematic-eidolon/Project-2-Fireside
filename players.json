@@ -1,13 +1,10 @@
 {
-  "fabs": {
-    "location": "UK",
-    "password": "",
-    "wins": 5
-  },
-  "fabi": {
-    "location": "UK"
-  },
-  "fab": {
-    "location": "UK"
-  }
+    "abc": {
+        "password": "b'\\xfc\\xdbKB?NR\\x83\\xaf\\xa2I\\xd7b\\xefj\\xef\\x15\\x0e\\x91\\xfc\\xcd\\x81\\rC\\xe5\\xe7\\x19\\xd1E\\x12\\xde\\xc7'",
+        "location": "UK"
+    },
+    "test": {
+        "password": "b'\\xc8m0/\\xaf\\x8f\\xa4\\xab\\xec\\x00\\xfc\\xa5\\x80D\\xc2\\xd3r|\\xc4\\xdf\\x0c\\x8a\\x00A|\\x88\\x86\\xb3 \\x0ei\\xa8'",
+        "location": "UK"
+    }
 }

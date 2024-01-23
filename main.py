@@ -15,6 +15,8 @@ import time
 import datetime
 import json
 
+PlayerInstance = playerClass.Player()
+
 # ==================== ATTEMPTS FUNCTION ================ #
 # This function is used to call a function repreated times
 # E.g. 3 password guesses
@@ -50,7 +52,9 @@ with open("settings.json") as f:
 # ====================== VALIDATION FUNCTION ================== #
 
 def verifyOptionInput(minimumInteger: int, maximumInteger: int,
-                      userInput: str) -> int:
+                      userInput: str, __id:bool=False) -> int:
+  if __id and userInput.lower() == "q":
+    return 9
   try:
     _userInput = int(userInput)
     if _userInput < minimumInteger or _userInput > maximumInteger:
@@ -88,9 +92,9 @@ def adminMenu():
     6: Add a new user
     7: View a profile
     8: Edit a user
-    9: Quit
+    9: Quit (or type q)
   """)
-  choice = verifyOptionInput(0, 10, input(">"))
+  choice = verifyOptionInput(0, 10, input(">"), True)
   match choice:
     case 1:
       # ================= FIXTURE GENERATOR =============== #
@@ -153,7 +157,7 @@ def adminMenu():
         with open("settings.json","w") as f:
           json.dump(data, f, indent=2)
 
-        # output sucess message
+        # output success message
           
         input(Fore.GREEN + "Fixture saved successfully. Press Enter" + Fore.WHITE)
       except Exception: # don't use bare except block will kill ctrl+c usage
@@ -169,14 +173,15 @@ def adminMenu():
 
       # CHECK FOR MATCH 
       
-      for fixture in activeFixtures:
+      for num, fixture in enumerate(activeFixtures):
+        print(fixture)
         if fixture.getName() == fName and authenticatorMaster.getPasswordAndAuthenticate(): # NOQA
             print(Fore.RED + f"Confirm delete fixture {fName}? (Y/n)")
             # CHECK TO DELETE AND AUTHENTICATE TO DO SO
             cfm = input()
             if cfm.lower() == "y":
-              del activeFixtures[activeFixtures.index(fName)]
-          
+              # del activeFixtures[activeFixtures.index(fName)]
+              del activeFixtures[num]
         print(Fore.WHITE)
         break # NO NEED TO CONTINUE CHECKING
   
@@ -205,33 +210,77 @@ def adminMenu():
           break
   
     case 4:
-      print("Add a fixture's results!")
-      #  Loop for each player
-      p1 = p2 = ""
-      found = False
+      # --------- ADD RESULT --------- #
+      print(Fore.BLUE + "Add a fixture's results!" + Fore.WHITE)
+      p1 = p2 = "" # 2 players for each result
       for p_searched in [p1, p2]:
-        p_searched = input('Name of the first player: ')
+        found = False
+        # Looping for each player
+        p_searched = input('Name of the player: ')
         with open('players.json', 'r') as f:
+          # Taking information for players.json
           player_info = json.load(f)
           for player in player_info:
             if player.lower() == p_searched.lower():
+              # Checking if player exists
               p_searched = player
               found = True
               break
           if not found:
-              print('Player not in database!')
-              return
+            print('Player not in database!')
+            # Player does not exist
+            return
  
       winner = input(f'Who was the winner of the match, (1) {p1} or (2) {p2}')
+      # Checks the winner
       with open('players.json', 'r') as f:
         player_info = json.load(f)
         player_info[player]['wins'] += 1
+        # Increases the players wins by 1
       with open('players.json', 'w') as f:
         json.dump(player_info, f, indent=2)
+      input()
+
+    case 5:
+      os.system("clear")
+      # Title
+      print(Fore.BLUE+asciiArt.leaderboard_title+Fore.WHITE)
+      # Gets information from players.json
+      with open('players.json', 'r') as f:
+        player_info = json.load(f)
+        # Sorts the information by the number of wi ns
+        sorted_players = dict(sorted(player_info.items(), key=lambda item: item[1]['wins'], reverse=True))
         
+        for player, info in sorted_players.items():
+          for inf, value in info.items():
+            # Unpacks nested dictionary to get player wins for each player
+            if inf == 'wins':
+              wins = value
+              break
+          print(f'{player}, wins: {wins}')
+        input()
+        # Sorts list by item[x] (change x depending on where position is)
+    case 6:
+      freshUserData = PlayerInstance.registerPlayer()
+      if type(freshUserData) is dict:
+        input()
+        username = freshUserData["username"]
+        error = PlayerInstance.addPlayer(username)
+        PlayerInstance.checkJsonError(error, isReg = True)
+        error = PlayerInstance.savePlayerData(freshUserData)
+        PlayerInstance.checkJsonError(error)
+        
+      else:
+        print("An error has occured.")
+    case 7:
+      queriedUsername = input("Username to search for: ")
+      error = PlayerInstance.showDetails(queriedUsername)
+      PlayerInstance.checkJsonError(error)
+      input()
     case 9:
-      sys.exit()
-      # any other clearup needs to go here, don't think this applies to anything rn
+     sys.exit()
+    # any other clearup needs to go here, don't think this applies to anything rn
+
 
 # ===============================================#
 
@@ -250,10 +299,10 @@ success = multipleAttemptsFunction(
 )
 
 
-activeFixtures = fixtureClass.loadFixturesFromJSON(currencyHandlerMaster)  
+# activeFixtures = fixtureClass.loadFixturesFromJSON(currencyHandlerMaster)  
 
-# if 1: # switch this around to disable admin authentication when testing
-if success:
+if 1: # switch this around to disable admin authentication when testing
+# if success:
   print(Fore.GREEN + "LOGIN SUCCESSFULL. ADMIN ACCESS GRANTED" + Fore.WHITE)
   time.sleep(1)
   while 1:
@@ -268,10 +317,43 @@ else:
   choice = 0
   try:
     choice = int(input(">"))
-  except: # NOQA
+  except Exception:
     print("Invalid choice.")
 
   if choice == 1:
-    pass
+    print(Fore.BLUE +"Login to non-admin account" + Fore.WHITE)
+    uN = input("Enter username:")
+    uP = input("Enter password:")
+
+    
+
+    nonAdminUserLoop = True
+    while nonAdminUserLoop:
+      os.system("clear")
+      print(f"""
+      Logged in as: {userLoggedIn}
+      
+        1: View account statistics
+        2: View upcoming fixtures
+        3: Delete account
+        4: Logout
+      """)
+      opt = verifyOptionInput(0,5,input(">"))
+
+      match opt:
+        case 1:
+          print("Account Info")
+        case 2:
+          print("Upcoming:")
+
+        case 3:
+          pass
+
+        case 4:
+          quit()
+      
+
+      
+  
   elif choice == 2:
     quit()
