@@ -1,18 +1,18 @@
 {
   "settings": {
-    "last-updated-currency": "19:1:2024",
-    "UKtoUSD": "1.2682",
-    "UKtoAUD": "1.9251",
-    "nextFixtureID": 5
+    "last-updated-currency": "23:1:2024",
+    "UKtoUSD": "1.2685",
+    "UKtoAUD": "1.9295",
+    "nextFixtureID": 9
   },
   "fixtures": [
     [
-      "TEST FIXTURE",
+      "abc",
       "24/01/24",
-      "player1,player2",
+      "a,b",
       0.99,
       1.0,
-      4
+      8
     ]
   ]
 }

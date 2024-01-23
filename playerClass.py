@@ -52,7 +52,7 @@ class Player:
 
   def getAllData(self):
     try:
-      with open("players.json", mode="r") as file:
+      with open("./players.json", mode="r") as file:
         allData = json.load(file)
         return allData
     except json.JSONDecodeError:
@@ -124,7 +124,9 @@ class Player:
     else:
       isFine = True
     return isFine
-        
+
+  def getPasswordHash(self):
+    pass
   #-----------Player Functions-----------
 
   def registerPlayer(self):
@@ -132,9 +134,11 @@ class Player:
     errorEncountered = False
     while cancel is False:
       username = self.createUsername()
-      if username in {-1,-2,-3}:
+      if username in {-1,-2}:
         errorEncountered = True
-        input("An error has occured. Cannot continue with registration.")
+        self.checkJsonError(username)
+        print("An error has occured. Cannot continue with registration.")
+        input("Press enter to continue: ")
         break # error, cannot continue with registration
       password = self.createPassword()
       location = self.createLocation()
@@ -153,7 +157,10 @@ class Player:
         else:
           print("That's not an option.")
     if errorEncountered is False:
-      freshUserData = {"username":username, "password":password,"location":location}
+      freshUserData = {"username":username, 
+                      "password":str(authenticatorHandler.returnHash(password)),
+                       "location":location
+                      }
       return freshUserData
 
   def createUsername(self):  # check username is unique
@@ -210,18 +217,11 @@ class Player:
 
 #===========Testing===========
 
-Fab = Player()
-#print(Fab.getAllData())
-#print(Fab.removePlayer("misterman"))
-#print(Fab.addPlayer("fab"))
-#print(Fab.savePlayerData("fab", testdict))
+# Fab = Player()
 
-#print(Fab.registerPlayer())
+# print(Fab.registerPlayer())
 #print(Fab.showDetails("fabs"))
 
-# authenticatorHandler.returnHash(password) -> str
-# authenticatorHandler.checkpass(correcthash, inputstring)
+#authenticatorHandler.checkPass(correcthash, inputstring)
 
-testDict = {"key":"val",
-           "key2":"val2"}
-print(testDict.popitem())
+# print(authenticatorHandler.checkPass(hash, strIn))

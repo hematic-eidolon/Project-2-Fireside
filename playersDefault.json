@@ -2,14 +2,10 @@
   "username": {
     "location": "UK",
     "password": "testpassword123",
-    "wins": 5
+    "wins": 0
+    "lb-position":0
     "moneyspent": 0.00
     "moneywon": 0.00
-  },
-  "fabi": {
-    "location": "UK"
-  },
-  "fab": {
-    "location": "UK"
+    "fixtures":["fixtureID-1", 
+      "fixtureID-2"]
   }
-}

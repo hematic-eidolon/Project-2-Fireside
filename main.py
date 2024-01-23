@@ -52,7 +52,7 @@ with open("settings.json") as f:
 # ====================== VALIDATION FUNCTION ================== #
 
 def verifyOptionInput(minimumInteger: int, maximumInteger: int,
-                      userInput: str, __id:bool) -> int:
+                      userInput: str, __id:bool=False) -> int:
   if __id and userInput.lower() == "q":
     return 9
   try:
@@ -157,7 +157,7 @@ def adminMenu():
         with open("settings.json","w") as f:
           json.dump(data, f, indent=2)
 
-        # output sucess message
+        # output success message
           
         input(Fore.GREEN + "Fixture saved successfully. Press Enter" + Fore.WHITE)
       except Exception: # don't use bare except block will kill ctrl+c usage
@@ -173,14 +173,15 @@ def adminMenu():
 
       # CHECK FOR MATCH 
       
-      for fixture in activeFixtures:
+      for num, fixture in enumerate(activeFixtures):
+        print(fixture)
         if fixture.getName() == fName and authenticatorMaster.getPasswordAndAuthenticate(): # NOQA
             print(Fore.RED + f"Confirm delete fixture {fName}? (Y/n)")
             # CHECK TO DELETE AND AUTHENTICATE TO DO SO
             cfm = input()
             if cfm.lower() == "y":
-              del activeFixtures[activeFixtures.index(fName)]
-          
+              # del activeFixtures[activeFixtures.index(fName)]
+              del activeFixtures[num]
         print(Fore.WHITE)
         break # NO NEED TO CONTINUE CHECKING
   
@@ -320,6 +321,39 @@ else:
     print("Invalid choice.")
 
   if choice == 1:
-    pass
+    print(Fore.BLUE +"Login to non-admin account" + Fore.WHITE)
+    uN = input("Enter username:")
+    uP = input("Enter password:")
+
+    
+
+    nonAdminUserLoop = True
+    while nonAdminUserLoop:
+      os.system("clear")
+      print(f"""
+      Logged in as: {userLoggedIn}
+      
+        1: View account statistics
+        2: View upcoming fixtures
+        3: Delete account
+        4: Logout
+      """)
+      opt = verifyOptionInput(0,5,input(">"))
+
+      match opt:
+        case 1:
+          print("Account Info")
+        case 2:
+          print("Upcoming:")
+
+        case 3:
+          pass
+
+        case 4:
+          quit()
+      
+
+      
+  
   elif choice == 2:
     quit()
