@@ -277,6 +277,8 @@ def adminMenu():
       error = PlayerInstance.showDetails(queriedUsername)
       PlayerInstance.checkJsonError(error)
       input()
+    case 8:
+      PlayerInstance.modifyPlayer()
     case 9:
      sys.exit()
     # any other clearup needs to go here, don't think this applies to anything rn

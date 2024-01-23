@@ -10,7 +10,8 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "cwd":"/home/archiso/Documents/Personal/python/Project-2-Fireside"
         }
     ]
 }

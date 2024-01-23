@@ -50,9 +50,9 @@ class Player:
   #   except FileNotFoundError:
   #     return -2  # File not found
 
-  def getAllData(self):
+  def getFileData(self, fileName):
     try:
-      with open("./players.json", mode="r") as file:
+      with open(fileName, mode="r") as file:
         allData = json.load(file)
         return allData
     except json.JSONDecodeError:
@@ -60,9 +60,12 @@ class Player:
     except FileNotFoundError:
       return -2  # File not found
 
+  def getAllPlayerData(self):
+    return self.getFileData("players.json")
+
   def savePlayerData(self, freshUserData):  # essentially updates a player
     try:
-      allData = self.getAllData()
+      allData = self.getAllPlayerData()
       username = freshUserData["username"]
       if type(allData) is dict:
         if username in allData:
@@ -79,13 +82,17 @@ class Player:
 
   def addPlayer(self, username):
     try:
-      allData = self.getAllData()
+      allData = self.getAllPlayerData()
+      playerList = self.getPlayerList()
       if type(allData) is dict:
         # only initialises a pair "username": None, use savePlayerData() as well
-        if username not in allData:
+        if username not in allData and username not in playerList["usernames"]:
           allData[username] = None
+          playerList["usernames"].append(username)
           with open("players.json", mode="w") as file:
             json.dump(allData, file, indent=4)
+          with open("playerList.json", mode="w") as file:
+            json.dump(playerList, file, indent=4)
           return 0
         else:
           return -3  # User is already recorded, no changes made
@@ -96,8 +103,8 @@ class Player:
 
   def removePlayer(self, username):
     try:
-      allData = self.getAllData()
-      if type(allData) is dict:
+      allData = self.getAllPlayerData()
+      if type(allData, "players.json") is dict:
         allData.pop(username)
         with open("players.json", mode="w") as file:
           json.dump(allData, file, indent=4)
@@ -125,8 +132,29 @@ class Player:
       isFine = True
     return isFine
 
-  def getPasswordHash(self):
-    pass
+  def getPlayerList(self):
+    return self.getFileData("playerList.json")
+    
+  def updateUserName(self, username1, username2):
+    try:
+      playerList = self.getPlayerList()
+      allData = self.getAllPlayerData()
+      if username1 in playerList["usernames"] and username1 in allData:
+        playerList["usernames"].remove(username1)
+        playerList["usernames"].append(username2)
+        allData[username2] = allData.pop(username1)
+        with open("playerList.json", mode="w") as file:
+          json.dump(playerList, file, indent=4)
+        with open("players.json", mode="w") as file:
+          json.dump(allData, file, indent=4)
+        return 0
+      else:
+        return -3  # User not recorded
+    except json.JSONDecodeError:
+      return -1  # Error parsing from json
+    except FileNotFoundError:
+      return -2  # File not found
+
   #-----------Player Functions-----------
 
   def registerPlayer(self):
@@ -164,7 +192,7 @@ class Player:
       return freshUserData
 
   def createUsername(self):  # check username is unique
-    allData = self.getAllData()
+    allData = self.getAllPlayerData()
     if type(allData) is dict:
       username = input("Enter a new username: ")
       while username in allData:
@@ -197,7 +225,7 @@ class Player:
 
   def showDetails(self, username):
     try:
-      allData = self.getAllData()
+      allData = self.getAllPlayerData()
       if type(allData) is dict:
         if username in allData:
           userData = allData[username]
@@ -214,10 +242,44 @@ class Player:
     except FileNotFoundError:
       return -2  # File not found
 
+  def modifyPlayer(self):
+    cancel = False
+    options = ["Change a username", "Change a password", "Change a location", "Remove a player", "Exit player modification"]
+    while cancel is False:
+      print("---------------------------------")
+      print("Welcome to the player modifier.\nOptions are shown below:")
+      for index, message in enumerate(options):
+        print(index, message)
+      option = int(input("Enter an option: "))
+      while not 0<=option<(len(options)):
+        print("\nInvalid option. Please try again.\n")
+        for index, message in enumerate(options):
+          print(index, message)
+        option = int(input("Enter an option: "))
+      if option == 0:
+        username1 = input("Existing username to replace: ")
+        while username1 not in self.getAllPlayerData():
+          print("\nUsername not found.\n")
+          username1 = input("Existing username to replace: ")
+        username2 = input("Enter a new username: ")
+        self.updateUserName(username1,username2)
+      elif option == 1:
+        username = input("Enter a username: ")
+        while username not in self.getAllPlayerData():
+          print("\nUsername not found.\n")
+          username = input("Enter a username: ")
+        password = self.createPassword()
+        allData = self.getAllPlayerData()
+        freshUserData = allData[username]
+        freshUserData["password"] = str(authenticatorHandler.returnHash(password))
+        freshUserData["username"] = username
+        self.savePlayerData(freshUserData)
+      elif option == len(options)-1:
+        cancel = True
 
 #===========Testing===========
 
-# Fab = Player()
+Fab = Player()
 
 # print(Fab.registerPlayer())
 #print(Fab.showDetails("fabs"))
@@ -225,3 +287,5 @@ class Player:
 #authenticatorHandler.checkPass(correcthash, inputstring)
 
 # print(authenticatorHandler.checkPass(hash, strIn))
+
+#Fab.modifyPlayer()
