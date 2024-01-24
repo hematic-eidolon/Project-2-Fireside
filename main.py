@@ -329,6 +329,7 @@ else:
 
     players = dict(json.load(open("players.json"))) # NOQA
 
+    # set up variables
     playerUsername = uN
     playerWins = None
     playerCWon = 0
@@ -337,39 +338,35 @@ else:
     playerLocation = None
     playerCSymbol = "£"
 
-    
+    # get all keys    
     playerUsernames = list(players.keys())
 
+    # now look through the dict 
     if uN in playerUsernames:
       for key in playerUsernames:
         if key == uN:
+          # match, get values and load into the variables
           playerWins = players[key].get("wins", "0")
           playerCWon = float(players[key].get("moneywon", 0))
           playerCSpent = float(players[key].get("moneyspent", 0))
           playerLocation = players[key].get("location","N/A")
-          playerCSymbol = {
+          playerCSymbol = { # cursed but works
             "UK":"£",
             "US":"$",
             "AU":"AU$"
           }[playerLocation]
-          break
+          break # no need to check for more accounts
 
-      print(playerCSpent)
-      print(playerCWon)
-      input()
 
+      # why cant everyone use £? this code corrects for lack of english economic imperialism
       if playerLocation == "AU":
         playerCSpent = currencyHandlerMaster.GBPtoAUD(playerCSpent)
         playerCWon   = currencyHandlerMaster.GBPtoAUD(playerCWon)
 
+      # stupid americans, making me write more if statements...
       if playerLocation == "US":
         playerCSpent = currencyHandlerMaster.GBPtoUSD(playerCSpent)
         playerCWon   = currencyHandlerMaster.GBPtoUSD(playerCWon)
-
-
-      print(playerCSpent)
-      print(playerCWon)
-      input()
 
       nonAdminUserLoop = True
       while nonAdminUserLoop:
@@ -381,6 +378,8 @@ else:
           3: Logout
         """)
         opt = verifyOptionInput(0,5,input(">"))
+        # wait? this is sanitised and valiadated? and its in one neat function?
+        # am I...feeling well?
   
         match opt:
           case 1:
@@ -394,7 +393,14 @@ else:
               Money Won:        {playerCSymbol}{playerCWon}
             """+Fore.WHITE)
           case 2:
-            print("Upcoming.")
+            print(Fore.BLUE + asciiArt.upcoming_fixtures + Fore.WHITE)
+            for f in activeFixtures:
+              if uN in f.getPlayers():
+                print("YESSSSSSS")
+                print(f)
+                print(Fore.RED + f"{f.getName()} on {f.getDate()}")
+            print(Fore.RED)
+            
           case 3:
             os.system("clear")
             print(Fore.RED + "LOGOUT...")
