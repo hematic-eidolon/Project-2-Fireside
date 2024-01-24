@@ -104,10 +104,13 @@ class Player:
   def removePlayer(self, username):
     try:
       allData = self.getAllPlayerData()
-      if type(allData, "players.json") is dict:
-        allData.pop(username)
-        with open("players.json", mode="w") as file:
-          json.dump(allData, file, indent=4)
+      allData.pop(username)
+      with open("players.json", mode="w") as file:
+        json.dump(allData, file, indent=4)
+      playerList = self.getPlayerList()
+      playerList["usernames"].remove(username)
+      with open("playerList.json", mode="w") as file:
+        json.dump(playerList, file, indent=4)
     except json.JSONDecodeError:
       return -1  # Error parsing from json
     except FileNotFoundError:
@@ -187,7 +190,13 @@ class Player:
     if errorEncountered is False:
       freshUserData = {"username":username, 
                       "password":str(authenticatorHandler.returnHash(password)),
-                       "location":location
+                       "location":location,
+                       "leaderboardPosition":0,
+                       "matchesWon":0,
+                       "matchesPlayed":0,
+                       "moneySpent":0,
+                       "moneyWon":0,
+                       "fixtures":[]
                       }
       return freshUserData
 
@@ -232,7 +241,7 @@ class Player:
           for item in userData:
             itemName = item[0].upper() + item[1:]
             if item == "password":
-              print(f"{itemName}: {'*'*len(userData[item])}")
+              print(f"{itemName}:**Hidden**")
             else:
               print(f"{itemName}: {userData[item]}")
         else:
@@ -274,6 +283,12 @@ class Player:
         freshUserData["password"] = str(authenticatorHandler.returnHash(password))
         freshUserData["username"] = username
         self.savePlayerData(freshUserData)
+      elif option == 3:
+        username = input("Enter a username: ")
+        while username not in self.getAllPlayerData() and username not in self.getPlayerList()["usernames"]:
+          print("\nUsername not found.\n")
+          username = input("Enter a username: ")
+        self.removePlayer(username)
       elif option == len(options)-1:
         cancel = True
 
@@ -281,11 +296,14 @@ class Player:
 
 Fab = Player()
 
-# print(Fab.registerPlayer())
-#print(Fab.showDetails("fabs"))
+#print(Fab.registerPlayer())
+#print(Fab.showDetails("fab"))
 
 #authenticatorHandler.checkPass(correcthash, inputstring)
 
 # print(authenticatorHandler.checkPass(hash, strIn))
 
 #Fab.modifyPlayer()
+#print(Fab.addPlayer("fabs"))
+
+#print(Fab.removePlayer())

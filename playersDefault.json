@@ -2,8 +2,9 @@
   "username": {
     "location": "UK",
     "password": "testpassword123",
-    "wins": 0,
-    "lb-position":0,
+    "matchesWon": 0,
+    "matchesPlayed":0,
+    "leaderboardPosition":0,
     "moneyspent": 0.00,
     "moneywon": 0.00,
     "fixtures":["fixtureID-1", 
