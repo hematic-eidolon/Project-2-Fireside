@@ -294,7 +294,7 @@ class Player:
 
 #===========Testing===========
 
-Fab = Player()
+# Fab = Player()
 
 #print(Fab.registerPlayer())
 #print(Fab.showDetails("fab"))

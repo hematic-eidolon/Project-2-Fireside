@@ -44,6 +44,7 @@ currencyHandlerMaster = currencyHandler.currencyHandler()
 authenticatorMaster = authenticatorHandler.authenticator()
 activeFixtures = []
 
+
 nextFixID = 0
 with open("settings.json") as f:
   nextFixID = int(dict(json.load(f))["settings"]["nextFixtureID"])
@@ -292,7 +293,7 @@ def adminMenu():
 
 #============= OPENING GRAPHICS =================#
 print(Fore.BLUE + asciiArt.fireside_title + Fore.RED)
-print(f"{'ENTER PASSWORD:' : ^50}")
+print(f"{'ENTER ADMIN PASSWORD:' : ^50}")
 
 success = multipleAttemptsFunction(
   authenticatorMaster.getPasswordAndAuthenticate,
@@ -300,11 +301,10 @@ success = multipleAttemptsFunction(
   Fore.RED + "Incorrect password. *t tries remaining."
 )
 
+activeFixtures = fixtureClass.loadFixturesFromJSON(currencyHandlerMaster)  
 
-# activeFixtures = fixtureClass.loadFixturesFromJSON(currencyHandlerMaster)  
-
-if 1: # switch this around to disable admin authentication when testing
-# if success:
+# if 1: # switch this around to disable admin authentication when testing
+if success:
   print(Fore.GREEN + "LOGIN SUCCESSFULL. ADMIN ACCESS GRANTED" + Fore.WHITE)
   time.sleep(1)
   while 1:
@@ -327,42 +327,81 @@ else:
     uN = input("Enter username:")
     uP = input("Enter password:")
 
-    # log in here
+    players = dict(json.load(open("players.json"))) # NOQA
 
+    playerUsername = uN
+    playerWins = None
+    playerCWon = 0
+    playerCSpent = 0
+    playerLDBPosition = None
+    playerLocation = None
+    playerCSymbol = "£"
 
-    userLoggedIn = None # Player() class
     
+    playerUsernames = list(players.keys())
 
-    nonAdminUserLoop = True
-    while nonAdminUserLoop:
-      os.system("clear")
-      print(f"""
-      Logged in as: {userLoggedIn.getUsername()}
-        1: View account statistics
-        2: View upcoming fixtures
-        3: Delete account
-        4: Logout
-      """)
-      opt = verifyOptionInput(0,5,input(">"))
+    if uN in playerUsernames:
+      for key in playerUsernames:
+        if key == uN:
+          playerWins = players[key].get("wins", "0")
+          playerCWon = float(players[key].get("moneywon", 0))
+          playerCSpent = float(players[key].get("moneyspent", 0))
+          playerLocation = players[key].get("location","N/A")
+          playerCSymbol = {
+            "UK":"£",
+            "US":"$",
+            "AU":"AU$"
+          }[playerLocation]
+          break
 
-      match opt:
-        case 1:
-          print(Fore.BLUE + asciiArt.account_info)
-          print(f"""
-            Account username: {userLoggedIn.getUsername()}
-            Account password: **********
-            Game wins:        {userLoggedIn.getLocation()}
-            Account Location:
-          """)
-        case 2:
-          print("Upcoming.")
+      print(playerCSpent)
+      print(playerCWon)
+      input()
 
-        case 3:
-          pass
+      if playerLocation == "AU":
+        playerCSpent = currencyHandlerMaster.GBPtoAUD(playerCSpent)
+        playerCWon   = currencyHandlerMaster.GBPtoAUD(playerCWon)
 
-        case 4:
-          quit()
-      
+      if playerLocation == "US":
+        playerCSpent = currencyHandlerMaster.GBPtoUSD(playerCSpent)
+        playerCWon   = currencyHandlerMaster.GBPtoUSD(playerCWon)
+
+
+      print(playerCSpent)
+      print(playerCWon)
+      input()
+
+      nonAdminUserLoop = True
+      while nonAdminUserLoop:
+        os.system("clear")
+        print(f"""
+        Logged in as: {uN}
+          1: View account statistics
+          2: View upcoming fixtures
+          3: Logout
+        """)
+        opt = verifyOptionInput(0,5,input(">"))
   
+        match opt:
+          case 1:
+            print(Fore.BLUE + asciiArt.account_info)
+            print(f"""
+              Account username: {uN}
+              Account password: **********
+              Game wins:        {playerWins}
+              Account Location: {playerLocation}
+              Money Spent:      {playerCSymbol}{playerCSpent}
+              Money Won:        {playerCSymbol}{playerCWon}
+            """+Fore.WHITE)
+          case 2:
+            print("Upcoming.")
+          case 3:
+            os.system("clear")
+            print(Fore.RED + "LOGOUT...")
+            time.sleep(1)
+            os.system("clear")
+            quit()
+        
+        input()
   elif choice == 2:
     quit()
