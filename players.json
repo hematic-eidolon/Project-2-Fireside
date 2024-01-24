@@ -1,10 +1,9 @@
 {
-    "abc": {
-        "password": "b'\\xfc\\xdbKB?NR\\x83\\xaf\\xa2I\\xd7b\\xefj\\xef\\x15\\x0e\\x91\\xfc\\xcd\\x81\\rC\\xe5\\xe7\\x19\\xd1E\\x12\\xde\\xc7'",
-        "location": "UK"
-    },
-    "test": {
-        "password": "b'\\xda\\x01\\xe8;\\x14f\\x9a\\xe9\\xc7\\xb2\\x96\\xd8y\\x9ap\\x0c\\x876\\x89\\xe5Z\\x1e\\xf8\\x10\\r\\xae*\\xd5\\xfct\\xb3\\xf4'",
-        "location": "UK"
-    }
+  "test": {
+    "password": "b'e\\xa9[Td\\x04k\\xfc\\x14\\xb3x\\xe3;\\x90Tm \\x8c\\xcc]\\xa9\\xe0\\xb2.\\xbe|\\x93\\x8c;\\x83-\\xd8'",
+    "location": "US",
+    "wins": 1,
+    "moneyspent": 25,
+    "moneywon": 20
+  }
 }

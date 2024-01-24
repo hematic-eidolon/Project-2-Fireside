@@ -7,9 +7,8 @@ class currencyHandler():
   def __init__(self):
     # load settings and read the last date
     self.jsonDict = dict(json.load(open("settings.json"))) # NOQA
-    self.UKtoAUD = 0
-    self.UKtoUSD = 0
-
+    self.UKtoAUD = float(self.jsonDict["settings"]["UKtoAUD"])
+    self.UKtoUSD = float(self.jsonDict["settings"]["UKtoUSD"])
     # check if a day or more since last update.
     cT = datetime.datetime.now(datetime.timezone.utc) 
     pT = self.jsonDict["settings"]["last-updated-currency"]
@@ -20,9 +19,10 @@ class currencyHandler():
 
 
   # wrappers for the conversion as functions
-  def GBPtoAUD(self,value:float) -> float:
+  def GBPtoAUD(self,value):
+    print(self.UKtoAUD)
     return self.UKtoAUD * value
-  def GBPtoUSD(self,value:float) -> float:
+  def GBPtoUSD(self,value):
     return self.UKtoUSD * value
 
   # private method actually calls the API.

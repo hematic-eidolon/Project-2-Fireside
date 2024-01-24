@@ -187,7 +187,10 @@ class Player:
     if errorEncountered is False:
       freshUserData = {"username":username, 
                       "password":str(authenticatorHandler.returnHash(password)),
-                       "location":location
+                       "location":location,
+                       "wins":0,
+                       "moneyspent":0,
+                       "moneywon":0
                       }
       return freshUserData
 
@@ -279,7 +282,7 @@ class Player:
 
 #===========Testing===========
 
-Fab = Player()
+# Fab = Player()
 
 # print(Fab.registerPlayer())
 #print(Fab.showDetails("fabs"))
