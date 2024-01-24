@@ -203,8 +203,8 @@ def adminMenu():
             ------------------{Fore.WHITE}
             {Fore.RED} ID: {Fore.WHITE}           {fixture.getID()}
             {Fore.RED} Date: {Fore.WHITE}         {fixture.getDatePretty()}
-            {Fore.RED} Entry Fee: {Fore.WHITE}    £{fixture.getFee()}
-            {Fore.RED} Prize Money: {Fore.WHITE}  £{fixture.getPrizeMoney()}
+            {Fore.RED} Entry Fee: {Fore.WHITE}    £{fixture.getFee():.2f}
+            {Fore.RED} Prize Money: {Fore.WHITE}  £{fixture.getPrizeMoney():.2f}
           """)
           input()
           # stop checking for more fixtures since one has been found
@@ -213,6 +213,7 @@ def adminMenu():
     case 4:
       # --------- ADD RESULT --------- #
       print(Fore.BLUE + "Add a fixture's results!" + Fore.WHITE)
+      fName = input("Enter the name of the fixture: ")
       p1 = p2 = "" # 2 players for each result
       for p_searched in [p1, p2]:
         found = False
@@ -232,15 +233,33 @@ def adminMenu():
             # Player does not exist
             return
  
-      winner = input(f'Who was the winner of the match, (1) {p1} or (2) {p2}')
-      # Checks the winner
+      winner = input(f'Winner of the match (1 or 2), (1) {p1} or (2) {p2}\nWinner: ')
+      # get fixture loser
+      if winner == p1:
+        loser = p2
+      else:
+        loser = p1
+      # Get fixture info
+      with open('settings.json') as file:
+        fixtures = json.load(file)["fixtures"]
+        for i in range(0,len(fixtures)-1):
+          if fixtures[i][0] == fName:
+            fixtureIndex = i
+        fixture = fixtures[fixtureIndex] # the fixture, has prize info
+      # Updates the winner's data
       with open('players.json', 'r') as f:
         player_info = json.load(f)
-        player_info[player]['wins'] += 1
-        # Increases the players wins by 1
+        player_info[player]['matchesWon'] += 1
+        player_info[player]['matchesPlayed'] += 1
+        player_info[player]['moneyWon'] += fixture[4] # prize money
       with open('players.json', 'w') as f:
         json.dump(player_info, f, indent=2)
       input()
+
+      for num, fixture in enumerate(activeFixtures):
+        if fixture.getName() == fName:
+          del activeFixtures[num]
+          
 
     case 5:
       os.system("clear")
@@ -347,8 +366,8 @@ else:
         if key == uN:
           # match, get values and load into the variables
           playerWins = players[key].get("wins", "0")
-          playerCWon = float(players[key].get("moneywon", 0))
-          playerCSpent = float(players[key].get("moneyspent", 0))
+          playerCWon = float(players[key].get("moneyWon", 0))
+          playerCSpent = float(players[key].get("moneySpent", 0))
           playerLocation = players[key].get("location","N/A")
           playerCSymbol = { # cursed but works
             "UK":"£",
@@ -389,17 +408,15 @@ else:
               Account password: **********
               Game wins:        {playerWins}
               Account Location: {playerLocation}
-              Money Spent:      {playerCSymbol}{playerCSpent}
-              Money Won:        {playerCSymbol}{playerCWon}
+              Money Spent:      {playerCSymbol}{playerCSpent:.2f}
+              Money Won:        {playerCSymbol}{playerCWon:.2f}
             """+Fore.WHITE)
           case 2:
             print(Fore.BLUE + asciiArt.upcoming_fixtures + Fore.WHITE)
             for f in activeFixtures:
               if uN in f.getPlayers():
-                print("YESSSSSSS")
-                print(f)
                 print(Fore.RED + f"{f.getName()} on {f.getDate()}")
-            print(Fore.RED)
+            print(Fore.WHITE)
             
           case 3:
             os.system("clear")

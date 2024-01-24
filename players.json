@@ -1,1 +1,22 @@
-{}
+{
+  "fabs": {
+    "password": "b'\\x8a\\x7f\\xb9\\x1c\\x1f\\xb9\\x08\\xb5\\xe2\\xae\\xa9\\xca\\x18_[g9;\\x16\\x85\\xc7O\\x1ec\\xce\\x94\\xbe\\xf64\\x0c\\xc4\\x9a'",
+    "location": "UK",
+    "leaderboardPosition": 0,
+    "matchesWon": 0,
+    "matchesPlayed": 0,
+    "moneySpent": 0,
+    "moneyWon": 0,
+    "fixtures": []
+  },
+  "abc": {
+    "password": "b'\\xa2h\\xbe0\\x87\\x91\\xae\\xc8\\xc7\\xcf\\x06\\x13\\x06m\\x85\\tYc\\x02\\xef\\xedA_\\xe3\\xa5\\r\\xa0\\x9c\\xc8\\x1e|\\x9a'",
+    "location": "UK",
+    "leaderboardPosition": 0,
+    "matchesWon": 2,
+    "matchesPlayed": 1,
+    "moneySpent": 0,
+    "moneyWon": 500.0,
+    "fixtures": []
+  }
+}

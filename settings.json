@@ -3,16 +3,32 @@
     "last-updated-currency": "24:1:2024",
     "UKtoUSD": "1.2716",
     "UKtoAUD": "1.9294",
-    "nextFixtureID": 9
+    "nextFixtureID": 11
   },
   "fixtures": [
     [
       "test",
       "12/03/12",
-      "fab,abc",
+      "fabs,abc",
       50.0,
       500.0,
       9
+    ],
+    [
+      "fixture",
+      "24/01/23",
+      "fabs,abc",
+      0.99,
+      1.0,
+      9
+    ],
+    [
+      "test1",
+      "03/04/23",
+      "abc,fabs",
+      4.0,
+      5.0,
+      10
     ]
   ]
 }
